@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Portal de Simulados</title>
+  <style>
+    :root {
+      --primary: #2563eb;
+      --primary-hover: #1d4ed8;
+      --secondary: #0f766e;
+      --secondary-hover: #115e59;
+      --bg: #f8fafc;
+      --card-bg: #ffffff;
+      --text-main: #0f172a;
+      --text-muted: #475569;
+      --border: #e2e8f0;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background-color: var(--bg);
+      color: var(--text-main);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+
+    .portal-container {
+      max-width: 780px;
+      width: 100%;
+      text-align: center;
+    }
+
+    .portal-header {
+      margin-bottom: 40px;
+    }
+
+    .portal-header h1 {
+      font-size: 2rem;
+      font-weight: 800;
+      margin-bottom: 10px;
+      color: var(--text-main);
+    }
+
+    .portal-header p {
+      color: var(--text-muted);
+      font-size: 1.05rem;
+    }
+
+    .cards-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 24px;
+    }
+
+    .simulado-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 32px 28px;
+      text-align: left;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+      transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .simulado-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 12px 20px -5px rgba(0, 0, 0, 0.08);
+      border-color: #cbd5e1;
+    }
+
+    .badge {
+      display: inline-block;
+      font-size: 0.78rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      padding: 4px 10px;
+      border-radius: 6px;
+      margin-bottom: 14px;
+    }
+
+    .badge-bd { background: #eff6ff; color: var(--primary); }
+    .badge-web { background: #f0fdfa; color: var(--secondary); }
+
+    .simulado-card h2 {
+      font-size: 1.3rem;
+      margin-bottom: 10px;
+      color: var(--text-main);
+    }
+
+    .simulado-card p {
+      font-size: 0.95rem;
+      color: var(--text-muted);
+      line-height: 1.5;
+      margin-bottom: 24px;
+    }
+
+    .btn {
+      display: block;
+      width: 100%;
+      text-align: center;
+      padding: 13px 20px;
+      border-radius: 10px;
+      font-weight: 600;
+      font-size: 1rem;
+      text-decoration: none;
+      color: #ffffff;
+      transition: background 0.2s ease;
+    }
+
+    .btn-bd { background: var(--primary); }
+    .btn-bd:hover { background: var(--primary-hover); }
+
+    .btn-web { background: var(--secondary); }
+    .btn-web:hover { background: var(--secondary-hover); }
+  </style>
+</head>
+<body>
+
+  <div class="portal-container">
+    <div class="portal-header">
+      <h1>Portal de Avaliações e Simulados</h1>
+      <p>Selecione abaixo a disciplina desejada para iniciar o seu simulado.</p>
+    </div>
+
+    <div class="cards-grid">
+      <!-- Card 1: Banco de Dados -->
+      <div class="simulado-card">
+        <div>
+          <span class="badge badge-bd">Unidades 3 e 4</span>
+          <h2>Gerenciamento em Banco de Dados</h2>
+          <p>40 questões abordando Instâncias, Backup, RAID, Replicação, Nuvem, GIS/PostGIS, XML e NoSQL (MongoDB).</p>
+        </div>
+        <a href="/banco-dados.html" class="btn btn-bd">Iniciar Simulado de BD</a>
+      </div>
+
+      <!-- Card 2: Programação Web -->
+      <div class="simulado-card">
+        <div>
+          <span class="badge badge-web">Revisão Geral</span>
+          <h2>Programação Web</h2>
+          <p>Questões sobre HTML5, CSS3, JavaScript, DOM, requisições HTTP, APIs REST e desenvolvimento moderno.</p>
+        </div>
+        <a href="/prog-web.html" class="btn btn-web">Iniciar Simulado de Web</a>
+      </div>
+    </div>
+  </div>
+
+</body>
+</html>

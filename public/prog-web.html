@@ -1,0 +1,767 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Simulado de Revisão - Programação Web (Aulas 07 a 12)</title>
+  <style>
+    :root {
+      --primary: #0f766e;
+      --primary-hover: #115e59;
+      --bg: #f8fafc;
+      --card-bg: #ffffff;
+      --text-main: #0f172a;
+      --text-muted: #475569;
+      --border: #e2e8f0;
+      --success: #16a34a;
+      --error: #dc2626;
+      --radius: 12px;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background-color: var(--bg);
+      color: var(--text-main);
+      line-height: 1.6;
+      padding-bottom: 60px;
+    }
+
+    .progress-container {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(8px);
+      border-bottom: 1px solid var(--border);
+      padding: 12px 20px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    }
+
+    .progress-inner {
+      max-width: 820px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+
+    .back-link {
+      text-decoration: none;
+      color: var(--primary);
+      font-weight: 600;
+      font-size: 0.875rem;
+      white-space: nowrap;
+    }
+
+    .progress-bar-bg {
+      flex: 1;
+      height: 8px;
+      background: var(--border);
+      border-radius: 999px;
+      overflow: hidden;
+    }
+
+    .progress-bar-fill {
+      height: 100%;
+      width: 0%;
+      background: var(--primary);
+      transition: width 0.3s ease;
+    }
+
+    .progress-text {
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      white-space: nowrap;
+    }
+
+    .container {
+      max-width: 820px;
+      margin: 32px auto;
+      padding: 0 16px;
+    }
+
+    header.quiz-header {
+      background: var(--card-bg);
+      padding: 32px;
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      margin-bottom: 24px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+    }
+
+    header.quiz-header h1 {
+      font-size: 1.75rem;
+      font-weight: 700;
+      color: var(--text-main);
+      margin-bottom: 8px;
+    }
+
+    header.quiz-header p {
+      color: var(--text-muted);
+      font-size: 0.95rem;
+    }
+
+    .question-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 24px 28px;
+      margin-bottom: 20px;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.03);
+      transition: border-color 0.2s;
+    }
+
+    .question-card.unanswered {
+      border-color: var(--error);
+      background-color: #fef2f2;
+    }
+
+    .question-title {
+      font-weight: 600;
+      font-size: 1.05rem;
+      margin-bottom: 16px;
+      color: var(--text-main);
+    }
+
+    .question-number {
+      display: inline-block;
+      background: #f0fdfa;
+      color: var(--primary);
+      font-weight: 700;
+      padding: 2px 10px;
+      border-radius: 6px;
+      margin-right: 8px;
+      font-size: 0.9rem;
+    }
+
+    pre.code-block {
+      background: #1e293b;
+      color: #f8fafc;
+      padding: 14px;
+      border-radius: 8px;
+      font-size: 0.85rem;
+      overflow-x: auto;
+      margin: 12px 0 16px 0;
+      font-family: "Fira Code", Consolas, Monaco, monospace;
+    }
+
+    .options-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .option-label {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      padding: 12px 16px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      font-size: 0.95rem;
+    }
+
+    .option-label:hover {
+      background-color: #f1f5f9;
+      border-color: #cbd5e1;
+    }
+
+    .option-label input[type="radio"] {
+      margin-top: 4px;
+      accent-color: var(--primary);
+      width: 16px;
+      height: 16px;
+      cursor: pointer;
+    }
+
+    .option-label:has(input:checked) {
+      background-color: #f0fdfa;
+      border-color: var(--primary);
+      font-weight: 500;
+    }
+
+    .submit-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 32px;
+      margin-top: 32px;
+      box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+    }
+
+    .submit-card h2 {
+      font-size: 1.25rem;
+      margin-bottom: 16px;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    .form-group label {
+      display: block;
+      font-weight: 600;
+      margin-bottom: 6px;
+      font-size: 0.95rem;
+    }
+
+    .form-group input[type="text"] {
+      width: 100%;
+      padding: 12px 16px;
+      border: 1px solid #cbd5e1;
+      border-radius: 8px;
+      font-size: 1rem;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    .form-group input[type="text"]:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(15, 118, 110, 0.15);
+    }
+
+    .btn-submit {
+      width: 100%;
+      background: var(--primary);
+      color: #fff;
+      border: none;
+      padding: 14px 24px;
+      font-size: 1.05rem;
+      font-weight: 600;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .btn-submit:hover {
+      background: var(--primary-hover);
+    }
+
+    .btn-submit:disabled {
+      background: #94a3b8;
+      cursor: not-allowed;
+    }
+
+    #result-box {
+      display: none;
+      background: var(--card-bg);
+      border: 2px solid var(--primary);
+      border-radius: var(--radius);
+      padding: 32px;
+      margin-top: 24px;
+      text-align: center;
+    }
+
+    .score-badge {
+      display: inline-block;
+      font-size: 2.5rem;
+      font-weight: 800;
+      color: var(--primary);
+      background: #f0fdfa;
+      padding: 16px 32px;
+      border-radius: 16px;
+      margin: 16px 0;
+    }
+
+    .btn-home {
+      display: inline-block;
+      margin-top: 20px;
+      padding: 10px 20px;
+      background: #e2e8f0;
+      color: var(--text-main);
+      text-decoration: none;
+      border-radius: 8px;
+      font-weight: 600;
+    }
+
+    @media (max-width: 600px) {
+      header.quiz-header, .question-card, .submit-card { padding: 20px; }
+      header.quiz-header h1 { font-size: 1.4rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="progress-container">
+    <div class="progress-inner">
+      <a href="/" class="back-link">← Início</a>
+      <div class="progress-bar-bg">
+        <div class="progress-bar-fill" id="progress-fill"></div>
+      </div>
+      <div class="progress-text" id="progress-text">0 de 30 respondidas</div>
+    </div>
+  </div>
+
+  <div class="container">
+    <header class="quiz-header">
+      <h1>Simulado de Revisão — Aulas 07 a 12</h1>
+      <p>Programação Web • CSS, Layout (Flexbox/Grid), Design Responsivo, JavaScript/DOM, Acessibilidade e Publicação.</p>
+    </header>
+
+    <form id="quiz-form" novalidate>
+      <div id="questions-container"></div>
+
+      <div class="submit-card">
+        <h2>Finalizar e Enviar Respostas</h2>
+        <div class="form-group">
+          <label for="student-name">Nome Completo do Aluno *</label>
+          <input type="text" id="student-name" name="nome" placeholder="Digite seu nome completo..." required>
+        </div>
+        <button type="submit" class="btn-submit" id="submit-btn">Enviar Prova e Calcular Nota</button>
+      </div>
+    </form>
+
+    <div id="result-box">
+      <h2>Avaliação Registrada com Sucesso!</h2>
+      <p id="result-student" style="color: var(--text-muted); margin-top: 4px;"></p>
+      <div class="score-badge" id="result-score">0.0 / 10.0</div>
+      <p id="result-details" style="font-weight: 500;"></p>
+      <a href="/" class="btn-home">Voltar ao Portal de Simulados</a>
+    </div>
+  </div>
+
+  <script>
+    const ENDPOINT_SERVIDOR = "/avaliar";
+
+    const questoes = [
+      // AULA 07: Introdução ao CSS
+      {
+        id: 1,
+        texto: "[Aula 07] Qual é a forma mais recomendada e escalável de aplicar folhas de estilo CSS em um site com várias páginas HTML?",
+        opcoes: {
+          a: "Utilizando o atributo style diretamente em cada tag HTML (CSS inline).",
+          b: "Criando um arquivo .css externo e vinculando-o no <head> das páginas por meio da tag <link rel=\"stylesheet\" href=\"...\">.",
+          c: "Inserindo blocos <script> com regras de estilo no final do <body>.",
+          d: "Duplicando a tag <style> dentro de todas as seções de cada página."
+        }
+      },
+      {
+        id: 2,
+        texto: "[Aula 07] No mecanismo de cascata e especificidade do CSS, qual seletor possui maior peso (prioridade) para estilizar um mesmo elemento?",
+        opcoes: {
+          a: "Seletor de elemento/tag (ex: p { color: blue; }).",
+          b: "Seletor universal (ex: * { color: green; }).",
+          c: "Seletor de identificador único ID (ex: #destaque { color: red; }).",
+          d: "Seletor de classe (ex: .texto { color: black; })."
+        }
+      },
+      {
+        id: 3,
+        texto: "[Aula 07] Sobre o conceito de herança (inheritance) no CSS, assinale a alternativa correta:",
+        opcoes: {
+          a: "Propriedades relacionadas à tipografia (como font-family e color) definidas em um elemento pai são naturalmente herdadas pelos elementos filhos, salvo se sobrescritas.",
+          b: "Todas as propriedades CSS, incluindo border, margin e padding, são herdadas automaticamente por todos os elementos descendentes.",
+          c: "A herança só funciona quando o arquivo CSS está salvo na mesma pasta raiz do servidor.",
+          d: "Elementos filhos nunca podem redefinir uma cor de texto que já tenha sido atribuída ao elemento <body>."
+        }
+      },
+      {
+        id: 4,
+        texto: "[Aula 07] Observe a regra CSS abaixo:\np { font-family: 'Inter', Arial, sans-serif; }\nQual é o motivo de listar múltiplas fontes separadas por vírgula?",
+        opcoes: {
+          a: "Misturar visualmente o desenho das três fontes na mesma palavra.",
+          b: "Aumentar o tamanho da fonte automaticamente em telas maiores.",
+          c: "Permitir que cada parágrafo da página use uma fonte diferente aleatoriamente.",
+          d: "Definir uma pilha de fallback: caso a primeira fonte não esteja disponível no dispositivo do usuário, o navegador tenta carregar a próxima."
+        }
+      },
+      {
+        id: 5,
+        texto: "[Aula 07] Em CSS, qual formato de representação de cor permite definir diretamente o canal alfa de transparência (opacidade) junto aos canais Vermelho, Verde e Azul?",
+        opcoes: {
+          a: "rgb(255, 0, 0)",
+          b: "rgba(255, 0, 0, 0.5)",
+          c: "#FF0000",
+          d: "color-name: red"
+        }
+      },
+
+      // AULA 08: Layout com CSS
+      {
+        id: 6,
+        texto: "[Aula 08] No modelo de caixa do CSS (Box Model), qual é a ordem correta das camadas, partindo de dentro para fora?",
+        opcoes: {
+          a: "Margin → Border → Padding → Content.",
+          b: "Content → Margin → Border → Padding.",
+          c: "Content (conteúdo) → Padding (preenchimento interno) → Border (borda) → Margin (margem externa).",
+          d: "Border → Content → Padding → Margin."
+        }
+      },
+      {
+        id: 7,
+        texto: "[Aula 08] Qual propriedade CSS faz com que o width e o height declarados de um elemento já incluam o padding e a border, evitando que o elemento cresça além do esperado?",
+        opcoes: {
+          a: "box-sizing: border-box;",
+          b: "display: inline-block;",
+          c: "overflow: hidden;",
+          d: "position: relative;"
+        }
+      },
+      {
+        id: 8,
+        texto: "[Aula 08] Ao utilizar Flexbox (display: flex;) com direção padrão em linha (flex-direction: row;), quais propriedades alinham os itens no eixo principal (horizontal) e no eixo transversal (vertical), respectivamente?",
+        opcoes: {
+          a: "align-items e flex-wrap.",
+          b: "justify-content e align-items.",
+          c: "grid-template-columns e gap.",
+          d: "text-align e vertical-align."
+        }
+      },
+      {
+        id: 9,
+        texto: "[Aula 08] Qual é a principal diferença conceitual entre CSS Flexbox e CSS Grid na composição de interfaces?",
+        opcoes: {
+          a: "O Flexbox funciona apenas para textos, enquanto o Grid funciona apenas para imagens.",
+          b: "O Grid está obsoleto nos navegadores modernos, sendo substituído por tabelas HTML.",
+          c: "O Flexbox exige JavaScript para funcionar, enquanto o Grid é puramente declarativo.",
+          d: "O Flexbox é unidimensional (organiza itens em uma linha ou uma coluna por vez), enquanto o Grid é bidimensional (controla linhas e colunas simultaneamente)."
+        }
+      },
+      {
+        id: 10,
+        texto: "[Aula 08] Analise o código CSS abaixo:\nQual será o resultado visual desse contêiner?",
+        codigo: ".grade {\n  display: grid;\n  grid-template-columns: repeat(3, 1fr);\n  gap: 16px;\n}",
+        opcoes: {
+          a: "Criará 3 linhas fixas de 1 pixel de altura cada.",
+          b: "Empilhará todos os itens em uma única coluna centralizada.",
+          c: "Criará um layout em grade com 3 colunas de larguras iguais e espaçamento de 16px entre os itens.",
+          d: "Ocultará os 3 primeiros elementos filhos da grade."
+        }
+      },
+
+      // AULA 09: Design responsivo
+      {
+        id: 11,
+        texto: "[Aula 09] O que caracteriza a abordagem de desenvolvimento conhecida como Mobile First?",
+        opcoes: {
+          a: "Criar um aplicativo nativo para Android/iOS e bloquear o acesso pelo computador.",
+          b: "Projetar e escrever primeiro o CSS base para telas pequenas (dispositivos móveis) e adicionar media queries (min-width) para adaptar o layout a telas maiores.",
+          c: "Desenvolver primeiro o layout complexo de desktop e remover elementos via JavaScript no celular.",
+          d: "Utilizar apenas larguras fixas em pixels (px) para garantir que o site fique idêntico em qualquer tela."
+        }
+      },
+      {
+        id: 12,
+        texto: "[Aula 09] Qual tag HTML é indispensável dentro do <head> para que os navegadores móveis ajustem corretamente a escala da página à largura da tela do dispositivo?",
+        opcoes: {
+          a: "<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">",
+          b: "<meta charset=\"UTF-8\">",
+          c: "<link rel=\"responsive\" href=\"mobile.css\">",
+          d: "<meta name=\"robots\" content=\"index, follow\">"
+        }
+      },
+      {
+        id: 13,
+        texto: "[Aula 09] Qual é a diferença entre as unidades relativas em e rem no CSS?",
+        opcoes: {
+          a: "em refere-se à largura da janela; rem refere-se à altura da janela.",
+          b: "Não há diferença; ambas são sinônimos exatos de pixels.",
+          c: "em é relativa ao font-size do elemento pai imediato, enquanto rem é sempre relativa ao font-size do elemento raiz (<html>).",
+          d: "rem só pode ser usada em margens e em só pode ser usada em fontes."
+        }
+      },
+      {
+        id: 14,
+        texto: "[Aula 09] Qual regra CSS garante que uma imagem nunca ultrapasse a largura do seu contêiner pai em telas menores, mantendo sua proporção original sem distorcer?",
+        opcoes: {
+          a: "width: 1000px; height: 500px;",
+          b: "max-width: 100%; height: auto;",
+          c: "display: none; overflow: scroll;",
+          d: "position: fixed; width: 100vh;"
+        }
+      },
+      {
+        id: 15,
+        texto: "[Aula 09] Observe a Media Query abaixo:\n@media (min-width: 768px) { .menu { display: flex; } }\nQuando essa regra será aplicada?",
+        opcoes: {
+          a: "Apenas quando a largura da janela for menor que 768 pixels.",
+          b: "Apenas quando o dispositivo estiver em modo de impressão.",
+          c: "Apenas em televisores com resolução 4K.",
+          d: "Sempre que a largura da área de visualização (viewport) for igual ou superior a 768 pixels."
+        }
+      },
+
+      // AULA 10: JavaScript: lógica e DOM
+      {
+        id: 16,
+        texto: "[Aula 10] Em JavaScript moderno (ES6+), qual é a diferença entre declarar uma variável com let e com const?",
+        opcoes: {
+          a: "let só armazena números; const só armazena textos.",
+          b: "const cria uma variável global acessível em todos os sites; let é privada.",
+          c: "let permite que o valor da variável seja reatribuído posteriormente, enquanto const cria uma referência constante que não pode ser reatribuída.",
+          d: "Ambas funcionam exatamente igual ao antigo var, sem escopo de bloco."
+        }
+      },
+      {
+        id: 17,
+        texto: "[Aula 10] Qual método do objeto document permite selecionar o primeiro elemento da página que corresponda a qualquer seletor CSS válido (como '#btn-enviar' ou '.card-ativo')?",
+        opcoes: {
+          a: "document.getElementsByTagName()",
+          b: "document.querySelector()",
+          c: "document.createElement()",
+          d: "document.write()"
+        }
+      },
+      {
+        id: 18,
+        texto: "[Aula 10] Qual é a maneira recomendada de associar uma função de resposta ao clique de um botão em JavaScript, separando o comportamento da marcação HTML?",
+        opcoes: {
+          a: "botao.addEventListener('click', minhaFuncao);",
+          b: "<button click=\"minhaFuncao\">Enviar</button>",
+          c: "botao.style.click = minhaFuncao;",
+          d: "window.onhover(botao, minhaFuncao);"
+        }
+      },
+      {
+        id: 19,
+        texto: "[Aula 10] Analise o trecho de código JavaScript abaixo:\nQual será o texto exibido no console?",
+        codigo: "const nota = 7.5;\nif (nota >= 7) {\n  console.log('Aprovado');\n} else {\n  console.log('Recuperação');\n}",
+        opcoes: {
+          a: "Recuperação",
+          b: "7.5",
+          c: "undefined",
+          d: "Aprovado"
+        }
+      },
+      {
+        id: 20,
+        texto: "[Aula 10] Para alternar dinamicamente a presença de uma classe CSS (como '.ativo') em um elemento HTML ao clicar em um menu, qual método de classList é mais adequado?",
+        opcoes: {
+          a: "elemento.classList.style('ativo')",
+          b: "elemento.classList.toggle('ativo')",
+          c: "elemento.classList.innerHTML('ativo')",
+          d: "elemento.classList.push('ativo')"
+        }
+      },
+
+      // AULA 11: Acessibilidade e qualidade
+      {
+        id: 21,
+        texto: "[Aula 11] Por que o uso de tags semânticas do HTML5 (como <header>, <nav>, <main>, <article> e <footer>) é fundamental para a acessibilidade?",
+        opcoes: {
+          a: "Porque essas tags deixam o site colorido automaticamente sem precisar de CSS.",
+          b: "Porque impedem que o código HTML seja copiado por outros desenvolvedores.",
+          c: "Porque comunicam o significado e a estrutura das regiões da página aos leitores de tela e mecanismos de busca.",
+          d: "Porque aumentam a velocidade de download das imagens no servidor."
+        }
+      },
+      {
+        id: 22,
+        texto: "[Aula 11] Qual é a função do atributo alt na tag <img> e como ele deve ser preenchido em imagens informativas?",
+        opcoes: {
+          a: "Definir a largura máxima da imagem em pixels.",
+          b: "Fornecer uma descrição textual clara do conteúdo/função da imagem para usuários de leitores de tela ou caso a imagem falhe ao carregar.",
+          c: "Aplicar um filtro de alto contraste sobre a fotografia.",
+          d: "Indicar o nome do fotógrafo apenas para fins de direitos autorais internos."
+        }
+      },
+      {
+        id: 23,
+        texto: "[Aula 11] Em relação à navegação por teclado (essencial para usuários que não utilizam mouse), o que deve ser garantido nos elementos interativos da página?",
+        opcoes: {
+          a: "Todos os botões, links e campos de formulário devem ser alcançáveis via tecla Tab em ordem lógica e apresentar um indicador visual de foco (:focus-visible / outline).",
+          b: "Remover o contorno de foco com outline: none; em todos os elementos sem oferecer alternativa visual.",
+          c: "Substituir todos os botões <button> por elementos <div> sem atributos de acessibilidade.",
+          d: "Exigir que o usuário pressione Ctrl + Alt + Delete para ativar cada link."
+        }
+      },
+      {
+        id: 24,
+        texto: "[Aula 11] O que avalia o critério de contraste de cores nas diretrizes de acessibilidade web (WCAG)?",
+        opcoes: {
+          a: "Se o site utiliza exclusivamente cores em preto e branco.",
+          b: "A quantidade total de imagens animadas na tela inicial.",
+          c: "Se todas as fontes do site possuem tamanho inferior a 10 pixels.",
+          d: "A diferença de luminância entre a cor do texto e a cor do plano de fundo, garantindo legibilidade inclusive para pessoas com baixa visão ou daltonismo."
+        }
+      },
+      {
+        id: 25,
+        texto: "[Aula 11] Qual ferramenta oficial permite verificar se a marcação HTML de uma página segue os padrões web e não possui tags mal fechadas ou atributos inválidos?",
+        opcoes: {
+          a: "MySQL Workbench",
+          b: "Validador de Marcação do W3C (W3C Markup Validation Service)",
+          c: "MongoDB Compass",
+          d: "FileZilla FTP"
+        }
+      },
+
+      // AULA 12: Projeto e publicação
+      {
+        id: 26,
+        texto: "[Aula 12] Na estrutura de pastas de um projeto web estático pronto para publicação, por que a página principal deve ser nomeada como index.html?",
+        opcoes: {
+          a: "Porque o navegador bloqueia qualquer arquivo que tenha outro nome.",
+          b: "Porque é uma exigência da linguagem JavaScript para carregar variáveis.",
+          c: "Porque os servidores web são configurados por padrão para procurar e servir o arquivo index.html automaticamente quando o usuário acessa o domínio raiz.",
+          d: "Porque apenas arquivos chamados index.html aceitam folhas de estilo CSS externas."
+        }
+      },
+      {
+        id: 27,
+        texto: "[Aula 12] Durante a revisão final antes da publicação de um site estático, qual erro comum de caminhos (paths) pode fazer com que imagens e arquivos CSS funcionem no computador local mas quebrem após o deploy?",
+        opcoes: {
+          a: "Usar caminhos absolutos locais do sistema operacional (ex: C:\\Users\\aluno\\site\\estilo.css) ou errar letras maiúsculas/minúsculas em servidores Linux (case-sensitive).",
+          b: "Organizar os arquivos CSS e JS em subpastas separadas dentro do projeto.",
+          c: "Utilizar caminhos relativos como ./css/style.css.",
+          d: "Incluir comentários explicativos dentro do código CSS."
+        }
+      },
+      {
+        id: 28,
+        texto: "[Aula 12] O que caracteriza um site estático no momento da hospedagem e publicação?",
+        opcoes: {
+          a: "Um site que não possui nenhum botão, link ou animação visual.",
+          b: "Um site composto por arquivos pré-construídos (HTML, CSS, JavaScript e mídias) entregues diretamente pelo servidor ao navegador sem necessidade de renderização dinâmica no servidor a cada requisição.",
+          c: "Um site que só pode ser visualizado offline sem conexão com a internet.",
+          d: "Um site que exige obrigatoriamente um banco de dados relacional para exibir um parágrafo de texto."
+        }
+      },
+      {
+        id: 29,
+        texto: "[Aula 12] Qual plataforma amplamente utilizada permite hospedar gratuitamente sites estáticos diretamente a partir de um repositório Git?",
+        opcoes: {
+          a: "Oracle Database",
+          b: "QGIS Server",
+          c: "IBM Guardium",
+          d: "GitHub Pages (assim como Vercel ou Netlify)"
+        }
+      },
+      {
+        id: 30,
+        texto: "[Aula 12] Qual item faz parte do checklist essencial de revisão final antes de divulgar um projeto web publicado?",
+        opcoes: {
+          a: "Apagar o arquivo README.md e remover todas as tags <meta>.",
+          b: "Testar o site apenas em um único navegador e em resolução fixa de monitor.",
+          c: "Verificar links quebrados, testar a responsividade em diferentes tamanhos de tela, validar formulários/interações JS e checar o carregamento via HTTPS.",
+          d: "Desativar o carregamento de imagens para economizar banda."
+        }
+      }
+    ];
+
+    const container = document.getElementById('questions-container');
+    const progressFill = document.getElementById('progress-fill');
+    const progressText = document.getElementById('progress-text');
+
+    questoes.forEach(q => {
+      const card = document.createElement('div');
+      card.className = 'question-card';
+      card.id = `card-q${q.id}`;
+
+      let html = `<div class="question-title"><span class="question-number">${q.id}</span>${escapeHTML(q.texto).replace(/\n/g, '<br>')}</div>`;
+      
+      if (q.codigo) {
+        html += `<pre class="code-block">${escapeHTML(q.codigo)}</pre>`;
+      }
+
+      html += `<div class="options-list">`;
+      for (const [letra, textoOpcao] of Object.entries(q.opcoes)) {
+        html += `
+          <label class="option-label">
+            <input type="radio" name="q${q.id}" value="${letra}" onchange="atualizarProgresso(${q.id})">
+            <span><strong>${letra.toUpperCase()})</strong> ${escapeHTML(textoOpcao)}</span>
+          </label>
+        `;
+      }
+      html += `</div>`;
+      card.innerHTML = html;
+      container.appendChild(card);
+    });
+
+    function escapeHTML(str) {
+      return str.replace(/[&<>'"]/g, tag => ({
+        '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;'
+      }[tag]));
+    }
+
+    function atualizarProgresso(questaoId) {
+      if (questaoId) {
+        document.getElementById(`card-q${questaoId}`).classList.remove('unanswered');
+      }
+      const respondidas = document.querySelectorAll('input[type="radio"]:checked').length;
+      const percentual = (respondidas / questoes.length) * 100;
+      progressFill.style.width = `${percentual}%`;
+      progressText.textContent = `${respondidas} de ${questoes.length} respondidas`;
+    }
+
+    document.getElementById('quiz-form').addEventListener('submit', async function(e) {
+      e.preventDefault();
+
+      const nomeInput = document.getElementById('student-name');
+      const nome = nomeInput.value.trim();
+
+      if (!nome) {
+        alert("Por favor, preencha seu nome completo antes de enviar.");
+        nomeInput.focus();
+        return;
+      }
+
+      let primeiraNaoRespondida = null;
+      const respostas = {};
+
+      questoes.forEach(q => {
+        const marcada = document.querySelector(`input[name="q${q.id}"]:checked`);
+        const card = document.getElementById(`card-q${q.id}`);
+        if (!marcada) {
+          card.classList.add('unanswered');
+          if (!primeiraNaoRespondida) primeiraNaoRespondida = card;
+        } else {
+          card.classList.remove('unanswered');
+          respostas[`q${q.id}`] = marcada.value;
+        }
+      });
+
+      if (primeiraNaoRespondida) {
+        alert("Você ainda não respondeu todas as questões. As questões pendentes foram destacadas em vermelho.");
+        primeiraNaoRespondida.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        return;
+      }
+
+      const btn = document.getElementById('submit-btn');
+      btn.disabled = true;
+      btn.textContent = "Enviando e calculando nota...";
+
+      const payload = {
+        disciplina: "programacao_web",
+        aluno: nome,
+        data_envio: new Date().toISOString(),
+        respostas: respostas
+      };
+
+      try {
+        const response = await fetch(ENDPOINT_SERVIDOR, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+
+        if (!response.ok) throw new Error("Erro na resposta do servidor.");
+
+        const resultado = await response.json();
+        exibirResultado(nome, resultado.nota, resultado.acertos, questoes.length);
+      } catch (erro) {
+        console.error(erro);
+        alert("Não foi possível conectar ao servidor do banco de dados no momento.");
+        btn.disabled = false;
+        btn.textContent = "Enviar Prova e Calcular Nota";
+      }
+    });
+
+    function exibirResultado(nome, nota, acertos, total) {
+      document.getElementById('quiz-form').style.display = 'none';
+      const resultBox = document.getElementById('result-box');
+      document.getElementById('result-student').textContent = `Aluno(a): ${nome}`;
+      document.getElementById('result-score').textContent = `${Number(nota).toFixed(1)} / 10.0`;
+      document.getElementById('result-details').textContent = `Você acertou ${acertos} de ${total} questões.`;
+      resultBox.style.display = 'block';
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  </script>
+</body>
+</html>
