@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Avaliação de Revisão - Unidades 3 e 4</title>
+  <style>
+    :root {
+      --primary: #2563eb;
+      --primary-hover: #1d4ed8;
+      --bg: #f8fafc;
+      --card-bg: #ffffff;
+      --text-main: #0f172a;
+      --text-muted: #475569;
+      --border: #e2e8f0;
+      --success: #16a34a;
+      --error: #dc2626;
+      --radius: 12px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background-color: var(--bg);
+      color: var(--text-main);
+      line-height: 1.6;
+      padding-bottom: 60px;
+    }
+
+    /* Barra de progresso fixa no topo */
+    .progress-container {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(8px);
+      border-bottom: 1px solid var(--border);
+      padding: 12px 20px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    }
+
+    .progress-inner {
+      max-width: 820px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+
+    .progress-bar-bg {
+      flex: 1;
+      height: 8px;
+      background: var(--border);
+      border-radius: 999px;
+      overflow: hidden;
+    }
+
+    .progress-bar-fill {
+      height: 100%;
+      width: 0%;
+      background: var(--primary);
+      transition: width 0.3s ease;
+    }
+
+    .progress-text {
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      white-space: nowrap;
+    }
+
+    /* Container Principal */
+    .container {
+      max-width: 820px;
+      margin: 32px auto;
+      padding: 0 16px;
+    }
+
+    header.quiz-header {
+      background: var(--card-bg);
+      padding: 32px;
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      margin-bottom: 24px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+    }
+
+    header.quiz-header h1 {
+      font-size: 1.75rem;
+      font-weight: 700;
+      color: var(--text-main);
+      margin-bottom: 8px;
+    }
+
+    header.quiz-header p {
+      color: var(--text-muted);
+      font-size: 0.95rem;
+    }
+
+    /* Cartão de Questão */
+    .question-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 24px 28px;
+      margin-bottom: 20px;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.03);
+      transition: border-color 0.2s;
+    }
+
+    .question-card.unanswered {
+      border-color: var(--error);
+      background-color: #fef2f2;
+    }
+
+    .question-title {
+      font-weight: 600;
+      font-size: 1.05rem;
+      margin-bottom: 16px;
+      color: var(--text-main);
+    }
+
+    .question-number {
+      display: inline-block;
+      background: #eff6ff;
+      color: var(--primary);
+      font-weight: 700;
+      padding: 2px 10px;
+      border-radius: 6px;
+      margin-right: 8px;
+      font-size: 0.9rem;
+    }
+
+    pre.code-block {
+      background: #1e293b;
+      color: #f8fafc;
+      padding: 14px;
+      border-radius: 8px;
+      font-size: 0.85rem;
+      overflow-x: auto;
+      margin: 12px 0 16px 0;
+      font-family: "Fira Code", Consolas, Monaco, monospace;
+    }
+
+    .options-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .option-label {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      padding: 12px 16px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      font-size: 0.95rem;
+    }
+
+    .option-label:hover {
+      background-color: #f1f5f9;
+      border-color: #cbd5e1;
+    }
+
+    .option-label input[type="radio"] {
+      margin-top: 4px;
+      accent-color: var(--primary);
+      width: 16px;
+      height: 16px;
+      cursor: pointer;
+    }
+
+    .option-label:has(input:checked) {
+      background-color: #eff6ff;
+      border-color: var(--primary);
+      font-weight: 500;
+    }
+
+    /* Seção Final de Identificação e Envio */
+    .submit-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 32px;
+      margin-top: 32px;
+      box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+    }
+
+    .submit-card h2 {
+      font-size: 1.25rem;
+      margin-bottom: 16px;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    .form-group label {
+      display: block;
+      font-weight: 600;
+      margin-bottom: 6px;
+      font-size: 0.95rem;
+    }
+
+    .form-group input[type="text"] {
+      width: 100%;
+      padding: 12px 16px;
+      border: 1px solid #cbd5e1;
+      border-radius: 8px;
+      font-size: 1rem;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    .form-group input[type="text"]:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+    }
+
+    .btn-submit {
+      width: 100%;
+      background: var(--primary);
+      color: #fff;
+      border: none;
+      padding: 14px 24px;
+      font-size: 1.05rem;
+      font-weight: 600;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .btn-submit:hover {
+      background: var(--primary-hover);
+    }
+
+    .btn-submit:disabled {
+      background: #94a3b8;
+      cursor: not-allowed;
+    }
+
+    /* Tela de Resultado / Nota */
+    #result-box {
+      display: none;
+      background: var(--card-bg);
+      border: 2px solid var(--primary);
+      border-radius: var(--radius);
+      padding: 32px;
+      margin-top: 24px;
+      text-align: center;
+    }
+
+    .score-badge {
+      display: inline-block;
+      font-size: 2.5rem;
+      font-weight: 800;
+      color: var(--primary);
+      background: #eff6ff;
+      padding: 16px 32px;
+      border-radius: 16px;
+      margin: 16px 0;
+    }
+
+    @media (max-width: 600px) {
+      header.quiz-header, .question-card, .submit-card {
+        padding: 20px;
+      }
+      header.quiz-header h1 {
+        font-size: 1.4rem;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="progress-container">
+    <div class="progress-inner">
+      <div class="progress-bar-bg">
+        <div class="progress-bar-fill" id="progress-fill"></div>
+      </div>
+      <div class="progress-text" id="progress-text">0 de 40 respondidas</div>
+    </div>
+  </div>
+
+  <div class="container">
+    <header class="quiz-header">
+      <h1>Simulado de Revisão — Unidades 3 e 4</h1>
+      <p>Gerenciamento e Desenvolvimento em Banco de Dados • Responda todas as 40 questões e informe seu nome ao final para registrar sua nota.</p>
+    </header>
+
+    <form id="quiz-form" novalidate>
+      <div id="questions-container"></div>
+
+      <div class="submit-card">
+        <h2>Finalizar e Enviar Respostas</h2>
+        <div class="form-group">
+          <label for="student-name">Nome Completo do Aluno *</label>
+          <input type="text" id="student-name" name="nome" placeholder="Digite seu nome completo..." required>
+        </div>
+        <button type="submit" class="btn-submit" id="submit-btn">Enviar Prova e Calcular Nota</button>
+      </div>
+    </form>
+
+    <!-- Área exibida após o retorno do servidor -->
+    <div id="result-box">
+      <h2>Avaliação Registrada com Sucesso!</h2>
+      <p id="result-student" style="color: var(--text-muted); margin-top: 4px;"></p>
+      <div class="score-badge" id="result-score">0.0 / 10.0</div>
+      <p id="result-details" style="font-weight: 500;"></p>
+    </div>
+  </div>
+
+  <script>
+    // URL do seu endpoint/script no servidor que receberá o JSON e salvará no Banco de Dados
+    const ENDPOINT_SERVIDOR = "/avaliar";
+
+    const questoes = [
+      { id: 1, texto: "No contexto de administração de servidores de banco de dados, o que define fundamentalmente uma instância?", opcoes: { a: "Um arquivo físico de texto onde são salvos exclusivamente os logs de auditoria dos usuários.", b: "Um componente de um servidor onde uma ou mais CPUs alocam espaços em disco e na memória para acessar informações do banco de dados.", c: "Uma tabela virtual criada para ocultar colunas confidenciais de usuários sem privilégios administrativos.", d: "Um protocolo de rede exclusivo utilizado para transferir documentos XML entre servidores locais." } },
+      { id: 2, texto: "Em relação ao processo Listener na arquitetura de conexões de banco de dados, assinale a alternativa correta:", opcoes: { a: "É responsável por compactar os arquivos de backup antes de enviá-los para a nuvem.", b: "Atua exclusivamente no armazenamento físico dos índices das tabelas relacionais.", c: "É um processo ouvidor que recebe requisições de conexão dos clientes como representante de um ou mais bancos de dados.", d: "Funciona apenas quando há um único banco de dados instalado, não suportando balanceamento de carga." } },
+      { id: 3, texto: "Ao configurar múltiplas instâncias no MySQL utilizando o utilitário mysqld_multi, como os grupos devem ser nomeados no arquivo de configuração (my.ini ou my.cnf)?", opcoes: { a: "[mysqld_backupN], onde N representa o tamanho máximo em gigabytes da instância.", b: "[mysqlN], onde N é um número inteiro distinto que identifica cada instância criada.", c: "[instance_all], repetindo exatamente o mesmo nome de grupo para todas as instâncias ativas.", d: "[client_multi], utilizando a mesma porta TCP/IP e o mesmo diretório de dados (datadir) para evitar conflitos." } },
+      { id: 4, texto: "Durante a configuração de múltiplas instâncias do MySQL em um mesmo servidor, por que os parâmetros pid-file, socket, port e datadir devem ter valores distintos para cada grupo?", opcoes: { a: "Para garantir que uma instância não acesse ou sobrescreva as informações e processos de outra instância.", b: "Porque o sistema operacional bloqueia a criação de mais de um arquivo no mesmo diretório raiz.", c: "Para permitir que o comando SELECT execute consultas cruzadas automaticamente sem necessidade de JOIN.", d: "Porque o protocolo HTTP exige portas sequenciais para bancos de dados não-relacionais." } },
+      { id: 5, texto: "Para gerenciar a parada (stop) de múltiplas instâncias por meio do mysqld_multi (que internamente aciona o mysqladmin), qual privilégio específico precisa estar configurado na conta administrativa do MySQL?", opcoes: { a: "REFERENCES", b: "TRIGGER", c: "SHUTDOWN", d: "EXECUTE" } },
+      { id: 6, texto: "Na arquitetura de memória de instâncias Oracle, qual é a principal diferença entre a SGA (System Global Area) e a PGA (Program Global Area)?", opcoes: { a: "A SGA é exclusiva para arquivos de backup em nuvem, enquanto a PGA armazena apenas dados geográficos.", b: "A SGA é uma área de memória compartilhada por todos os processos derivados da instância, enquanto a PGA é uma área de memória dedicada exclusivamente a cada processo/conexão.", c: "A PGA contém o Shared Pool e o Buffer de Redolog, enquanto a SGA armazena apenas variáveis locais de sessão.", d: "Ambas são áreas de armazenamento em disco rígido utilizadas apenas quando a memória RAM atinge 100% de uso." } },
+      { id: 7, texto: "Um desenvolvedor precisa manter simultaneamente no mesmo servidor uma versão 1.0 do banco de dados para um sistema legado local e uma versão 2.0 para um novo sistema web. Qual recurso estudado na Unidade 3 resolve esse cenário sem interromper o sistema legado?", opcoes: { a: "Criação de múltiplas instâncias isoladas no servidor.", b: "Conversão das tabelas relacionais para arquivos XML estáticos.", c: "Uso exclusivo de RAID 0 para espelhar as duas versões no mesmo disco.", d: "Aplicação de REVOKE ALL no usuário administrador do sistema legado." } },
+      { id: 8, texto: "Ao realizar o backup de um banco de dados através da opção Data Export do MySQL Workbench, o que acontece se a opção \"Skip table data (no-data)\" permanecer marcada?", opcoes: { a: "O backup será criptografado e enviado automaticamente para um servidor na nuvem.", b: "Apenas os registros das tabelas serão salvos, ignorando a estrutura de criação dos objetos.", c: "Somente a estrutura das tabelas será salva, descartando o conteúdo (dados) armazenado nelas.", d: "O arquivo gerado será dividido em múltiplos documentos JSON compatíveis com o MongoDB." } },
+      { id: 9, texto: "No MySQL Workbench, qual é a diferença entre as opções Export to Dump Project Folder e Export to Self-Contained File?", opcoes: { a: "A primeira salva apenas visões e procedimentos; a segunda salva apenas tabelas e índices.", b: "A primeira gera arquivos separados por tabela dentro de uma pasta (permitindo restauração seletiva); a segunda gera toda a base em um único arquivo .sql.", c: "A primeira exige conexão com a internet para salvar na nuvem; a segunda funciona apenas localmente.", d: "A primeira apaga os dados originais após a cópia; a segunda mantém os dados intactos no servidor." } },
+      { id: 10, texto: "Sobre os níveis de RAID (Redundant Array of Independent/Inexpensive Disks), assinale a alternativa que descreve corretamente uma limitação crítica do RAID 0:", opcoes: { a: "Exige no mínimo cinco discos rígidos iguais, tornando sua implementação financeiramente inviável.", b: "Apresenta lentidão extrema na leitura de dados devido ao cálculo constante de paridade em disco extra.", c: "Possui total ausência de redundância; se um dos discos falhar, todo o conjunto de dados torna-se indisponível.", d: "Está obsoleto porque os discos modernos já possuem controle de código de erro (ECC) embutido no circuito." } },
+      { id: 11, texto: "Qual nível de RAID realiza o espelhamento completo dos dados entre discos (duplicidade), garantindo que o sistema continue operando caso um disco falhe, mas reduzindo o desempenho de escrita por gravar o mesmo dado simultaneamente?", opcoes: { a: "RAID 0", b: "RAID 1", c: "RAID 2", d: "RAID 3" } },
+      { id: 12, texto: "Qual é a principal diferença estrutural entre o RAID 4 e o RAID 5 no tratamento das informações de paridade?", opcoes: { a: "O RAID 4 não utiliza paridade, enquanto o RAID 5 utiliza espelhamento duplo sem paridade.", b: "O RAID 4 grava as informações de paridade em um único disco dedicado, enquanto o RAID 5 distribui os bits de paridade entre todos os discos do conjunto.", c: "O RAID 4 exige no mínimo dez discos, enquanto o RAID 5 funciona com apenas um disco particionado.", d: "O RAID 5 grava a paridade apenas em memória RAM, enquanto o RAID 4 utiliza fitas magnéticas." } },
+      { id: 13, texto: "Na arquitetura de replicação de dados Master-Slave, qual é a sequência correta de funcionamento para manter os servidores sincronizados?", opcoes: { a: "O Slave registra alterações no relay log, envia ao Master e este atualiza seu log binário.", b: "O Master registra as transações em seu log binário; o Slave copia esses eventos para seu relay log e os executa localmente.", c: "Ambos os servidores gravam simultaneamente no mesmo disco físico via RAID 0, dispensando logs de eventos.", d: "O Master envia backups completos em formato XML a cada hora para substituir o banco de dados do Slave." } },
+      { id: 14, texto: "Além da redundância e do backup sincronizado, qual outro benefício operacional direto a replicação de dados proporciona a um sistema com alto volume de acessos?", opcoes: { a: "Eliminação completa da necessidade de autenticação de usuários no banco de dados.", b: "Balanceamento de carga, permitindo distribuir as requisições de consulta entre as réplicas.", c: "Conversão automática de consultas SQL em documentos BSON sem alterações na aplicação.", d: "Redução da consistência dos dados para permitir gravações offline sem log de transações." } },
+      { id: 15, texto: "Em relação ao conceito e às características de um banco de dados na nuvem, qual propriedade permite aumentar ou diminuir recursos computacionais contratados (como memória e processamento) conforme a demanda, sem necessidade de reiniciar o servidor?", opcoes: { a: "Elasticidade.", b: "Atomicidade.", c: "Desnormalização.", d: "Paridade distribuída." } },
+      { id: 16, texto: "De acordo com o conteúdo da Unidade 3, qual medida de segurança é recomendada para mitigar ataques de invasores que tentam explorar portas abertas de um servidor de banco de dados na nuvem?", opcoes: { a: "Desativar todos os logs de auditoria para evitar sobrecarga na rede.", b: "Liberar a porta de acesso do servidor exclusivamente para um endereço IP fixo autorizado.", c: "Utilizar servidores compartilhados públicos para mascarar o endereço físico da empresa.", d: "Configurar todas as tabelas com permissão pública de leitura (SELECT) e gravação (INSERT)." } },
+      { id: 17, texto: "No contexto de segurança e monitoramento de bancos de dados em ambientes corporativos e na nuvem, qual é a função do recurso Policy Violation no painel do IBM Guardium?", opcoes: { a: "Exibir tentativas de acesso ou conexões não autorizadas ao banco de dados para que o DBA possa bloqueá-las.", b: "Realizar a migração automática de tabelas relacionais para coleções do MongoDB.", c: "Calcular a distância geográfica entre dois pontos em mapas bidimensionais.", d: "Validar se todas as tags de um arquivo XML possuem fechamento correspondente." } },
+      { id: 18, texto: "Ao criar um banco de dados gratuito na plataforma de nuvem 000webhost, qual cuidado o administrador deve ter ao informar o nome do banco e do usuário no painel do phpMyAdmin?", opcoes: { a: "Remover qualquer prefixo numérico gerado pelo servidor, utilizando apenas letras maiúsculas.", b: "Utilizar o ID gerado pelo servidor que é concatenado automaticamente ao nome do usuário e do banco criados.", c: "Substituir a senha cadastrada pelo endereço IP da máquina local a cada nova sessão.", d: "Importar apenas arquivos com extensão .bson, pois o phpMyAdmin não reconhece arquivos .sql." } },
+      { id: 19, texto: "Sobre os desafios dos bancos de dados na nuvem apontados por Abadi (2009) e Castro (2011), assinale a alternativa correta:", opcoes: { a: "Bancos na nuvem priorizam a consistência rígida em detrimento total da escalabilidade, impedindo o crescimento sob demanda.", b: "Muitos bancos na nuvem focam fortemente na escalabilidade horizontal, podendo apresentar consistência fraca dos dados armazenados, o que exige análise no projeto da aplicação.", c: "A migração para a nuvem elimina completamente a dependência de qualidade de tráfego da internet e os riscos de confidencialidade.", d: "Servidores compartilhados na nuvem permitem total personalização do sistema operacional e isolamento completo de hardware." } },
+      { id: 20, texto: "Em bancos de dados geográficos (espaciais), como os dados são fundamentalmente classificados do ponto de vista de um SGBD?", opcoes: { a: "Dados estruturados e dados não-estruturados.", b: "Dados de ponto (caracterizados apenas por sua localização) e dados de região (que possuem localização e limite/fronteira).", c: "Dados binários e dados textuais.", d: "Dados transacionais e dados analíticos." } },
+      { id: 21, texto: "Em sistemas de informação geográfica (GIS), quais elementos do mundo real são tipicamente representados como segmentos de linha e como polígonos, respectivamente?", opcoes: { a: "Países e cidades como linhas; pontos de ônibus e semáforos como polígonos.", b: "Estradas e rios como segmentos de linha; países, estados e lagos como polígonos.", c: "Imagens de satélite como linhas; medições de temperatura pontual como polígonos.", d: "Áudios temporais como linhas; textos descritivos como polígonos." } },
+      { id: 22, texto: "Qual ferramenta livre de Sistema de Informação Geográfica (GIS) permite visualizar e publicar informações geoespaciais integradas a bancos de dados como o PostgreSQL (com a extensão PostGIS)?", opcoes: { a: "Apache JMeter", b: "IBM Guardium", c: "QGIS", d: "MongoDB Compass" } },
+      { id: 23, texto: "No PostgreSQL com a extensão espacial PostGIS, qual função é utilizada após a criação de uma tabela convencional para adicionar uma coluna geométrica e preencher os metadados em geometry_columns?", opcoes: { a: "GeometryFromText", b: "AddGeometryColumn", c: "ExtractValue", d: "AsText" } },
+      { id: 24, texto: "Analise a instrução SQL abaixo, executada em um banco de dados espacial PostGIS:\nQual é o objetivo dessa consulta?", codigo: "SELECT d2.denominacao\nFROM distritossp d1, distritossp d2\nWHERE touches(d1.spatial_data, d2.spatial_data)\nAND d2.denominacao <> 'GRAJAU'\nAND d1.denominacao = 'GRAJAU';", opcoes: { a: "Calcular a área total em quilômetros quadrados do distrito de Grajaú.", b: "Excluir os polígonos que sobrepõem o limite geográfico do distrito de Grajaú.", c: "Retornar a denominação dos distritos vizinhos cujas fronteiras tocam o distrito de Grajaú.", d: "Converter as coordenadas binárias do distrito de Grajaú em um arquivo XML." } },
+      { id: 25, texto: "De acordo com a hierarquia de tipos de dados espaciais do PostGIS, quando um objeto do tipo Polygon é considerado válido?", opcoes: { a: "Quando possui apenas um ponto central sem limites externos ou internos definidos.", b: "Quando nenhum dos seus anéis (exterior e interior) se cruza no limite, e os anéis interiores estão inteiramente contidos dentro dos exteriores.", c: "Quando é formado exclusivamente por segmentos de reta abertos que se cruzam múltiplas vezes.", d: "Quando representa uma coleção de pontos idênticos com as mesmas coordenadas geográficas." } },
+      { id: 26, texto: "Em bancos de dados multimídia que utilizam conceitos espaciais, como é realizada uma consulta por similaridade entre objetos (como imagens ou textos)?", opcoes: { a: "Mapeando os objetos em vetores de características (pontos em um espaço multidimensional) e buscando os vizinhos mais próximos.", b: "Aplicando o operador touches sobre tabelas relacionais normalizadas na terceira forma normal.", c: "Compactando os arquivos em TinyBlob de 8 bits e comparando seus nomes em ordem alfabética.", d: "Executando o comando mysqld_multi para dividir cada pixel da imagem em uma instância diferente." } },
+      { id: 27, texto: "Sobre a linguagem XML (eXtensible Markup Language), qual é a sua principal finalidade no contexto de troca e armazenamento de dados?", opcoes: { a: "Substituir completamente os protocolos de rede TCP/IP na comunicação entre servidores.", b: "Descrever dados e sua estrutura por meio de marcações (tags) extensíveis, isolando o conteúdo da formatação para facilitar a integração entre sistemas.", c: "Criar interfaces gráficas nativas sem necessidade de folhas de estilo como CSS ou XSL.", d: "Garantir o espelhamento físico de discos rígidos em servidores de missão crítica." } },
+      { id: 28, texto: "Observe o fragmento de código XML abaixo:\nAo tentar processar esse código no MySQL utilizando ExtractValue, nenhum valor é retornado. Qual é a causa do problema?", codigo: "<produto>\n  <nome>Notebook Gamer</nome>\n  <categoria>Informática</categoria>\n  <valor>4500.00</preco>\n</produto>", opcoes: { a: "A tag <valor> foi fechada com uma tag de nome diferente (</preco>), violando a estrutura bem-formada do XML.", b: "O XML não permite armazenar valores numéricos decimais dentro de subelementos.", c: "A tag raiz <produto> não possui um atributo obrigatório indicando a versão do banco de dados.", d: "O caractere ponto (.) no número 4500.00 é reservado exclusivamente para comandos XPath." } },
+      { id: 29, texto: "No MySQL, qual função nativa é utilizada para consultar e extrair o conteúdo armazenado dentro de tags específicas de uma string XML?", opcoes: { a: "AddGeometryColumn", b: "ExtractValue", c: "GeometryFromText", d: "AsText" } },
+      { id: 30, texto: "Considere a seguinte consulta no MySQL sobre uma variável @xml que armazena os dados de um cliente:\nQual será o comportamento dessa instrução?", codigo: "SELECT ExtractValue(@xml, '/cliente/child::*') AS retorno;", opcoes: { a: "Apagará todos os subelementos filhos da tag <cliente> na memória.", b: "Retornará os valores de todas as tags filhas diretas contidas dentro do elemento <cliente>.", c: "Retornará apenas o nome dos atributos da tag raiz, ignorando o texto dos subelementos.", d: "Gerará um erro de sintaxe, pois o operador child::* só funciona em bancos NoSQL." } },
+      { id: 31, texto: "Em documentos XML, como é classificado um elemento que está aninhado no interior de outro elemento de nível superior?", opcoes: { a: "Atributo de chave primária.", b: "Subelemento.", c: "Folha de estilo XSL.", d: "Instrução de processamento." } },
+      { id: 32, texto: "Qual padrão baseado em XML foi desenvolvido especificamente para estabelecer códigos procedimentais e troca de mensagens estruturadas entre aplicações distribuídas?", opcoes: { a: "SOAP", b: "RAID", c: "PGA", d: "BSON" } },
+      { id: 33, texto: "Qual é o significado da sigla NoSQL e qual foi a motivação principal para o surgimento desse paradigma de bancos de dados?", opcoes: { a: "No Structured Query; surgiu para proibir o uso de comandos de leitura em servidores web.", b: "Not Only SQL; surgiu para atender grandes volumes de dados, formatos variados e necessidades de escalabilidade horizontal e replicação.", c: "New Object SQL; surgiu exclusivamente para substituir o armazenamento de imagens em sistemas GIS.", d: "Non-Operational SQL; surgiu para gerenciar apenas backups frios em fitas magnéticas." } },
+      { id: 34, texto: "Qual é a diferença fundamental entre escalabilidade vertical (típica de bancos relacionais) e escalabilidade horizontal (típica de bancos NoSQL)?", opcoes: { a: "A vertical adiciona mais servidores simples à rede; a horizontal substitui o servidor por um modelo na nuvem.", b: "A vertical amplia a capacidade de hardware de um único servidor (mais CPU, RAM e disco); a horizontal distribui a carga adicionando mais máquinas/nós ao conjunto.", c: "A vertical aplica-se apenas a dados geográficos; a horizontal aplica-se apenas a documentos XML.", d: "Não há diferença técnica, sendo apenas nomenclaturas distintas usadas pela Oracle e pela Microsoft." } },
+      { id: 35, texto: "Em comparação com os bancos de dados relacionais tradicionais, como os bancos de dados NoSQL geralmente lidam com as propriedades ACID (Atomicidade, Consistência, Isolamento e Durabilidade)?", opcoes: { a: "Implementam as quatro propriedades de forma ainda mais rígida, bloqueando qualquer leitura concorrente.", b: "Geralmente abrem mão de parte das propriedades ACID rígidas em troca de maior desempenho e escalabilidade horizontal.", c: "Eliminam apenas a durabilidade, apagando todos os dados da memória sempre que o servidor é reiniciado.", d: "Substituem o conceito de transações por tabelas pivotadas normalizadas na quarta forma normal." } },
+      { id: 36, texto: "No banco de dados orientado a documentos MongoDB, como os registros são estruturados e armazenados internamente?", opcoes: { a: "Em tabelas rígidas com colunas fixas e chaves estrangeiras obrigatórias.", b: "Em coleções (collections) que agrupam documentos no formato JSON, armazenados internamente em representação binária chamada BSON.", c: "Em arquivos de texto puro delimitados por ponto e vírgula, sem suporte a arrays ou objetos aninhados.", d: "Em árvores XML validadas obrigatoriamente por folhas de estilo CSS." } },
+      { id: 37, texto: "Qual vantagem o formato BSON (Binary JSON) oferece ao MongoDB em relação à especificação padrão do JSON?", opcoes: { a: "Permite executar comandos DDL relacionais como ALTER TABLE diretamente nos documentos.", b: "Estende o modelo de dados oferecendo suporte a tipos adicionais (como Date, Integer, Double, Byte array e ObjectId), além de otimizar o armazenamento binário.", c: "Converte automaticamente documentos JSON em polígonos geográficos compatíveis com o QGIS.", d: "Impede que dois documentos da mesma coleção possuam campos diferentes entre si." } },
+      { id: 38, texto: "Observe o comando executado no shell do MongoDB:\nQual comando deve ser utilizado na sequência para consultar e exibir apenas os documentos da coleção produtos cuja marca seja \"Nike\"?", codigo: 'db.produtos.insert({"Marca": "Nike", "tamanho": "38", "preco": 100})', opcoes: { a: 'db.produtos.select({"Marca": "Nike"})', b: 'db.produtos.find({"Marca": "Nike"})', c: 'db.produtos.extract({"Marca": "Nike"})', d: 'db.produtos.query("Marca = Nike")' } },
+      { id: 39, texto: "Um administrador executou o comando db.vestidos.remove() no shell do MongoDB sem passar nenhum documento de filtro/condição como parâmetro. Qual será o efeito dessa operação?", opcoes: { a: "O comando será rejeitado pelo SGBD com erro de sintaxe obrigatória.", b: "Apenas o primeiro documento inserido na coleção vestidos será removido.", c: "Todos os documentos armazenados dentro da coleção vestidos serão apagados.", d: "A coleção vestidos será convertida em uma coleção somente leitura." } },
+      { id: 40, texto: "Analise os cenários abaixo e assinale a alternativa que indica a escolha arquitetural mais adequada segundo os fundamentos da Unidade 4:", opcoes: { a: "Para sistemas financeiros que exigem integridade transacional estrita (ACID) e portabilidade entre fornecedores, deve-se preferir bancos NoSQL; para camadas de cache em memória de alta velocidade, bancos relacionais.", b: "Para sistemas que exigem integridade transacional estrita (ACID) e estrutura tabular rígida, deve-se preferir bancos relacionais; para armazenar dados não normalizados em grande escala ou criar camadas de cache em objetos na memória, bancos NoSQL.", c: "Bancos NoSQL devem substituir integralmente todos os bancos relacionais, pois garantem 100% de padronização estrutural entre diferentes ferramentas NoSQL.", d: "Bancos relacionais não suportam nenhum tipo de replicação ou dados espaciais, exigindo a migração imediata de qualquer sistema legado para o MongoDB." } }
+    ];
+
+    const container = document.getElementById('questions-container');
+    const progressFill = document.getElementById('progress-fill');
+    const progressText = document.getElementById('progress-text');
+
+    // Renderiza as questões dinamicamente
+    questoes.forEach(q => {
+      const card = document.createElement('div');
+      card.className = 'question-card';
+      card.id = `card-q${q.id}`;
+
+      let html = `<div class="question-title"><span class="question-number">${q.id}</span>${escapeHTML(q.texto).replace(/\n/g, '<br>')}</div>`;
+      
+      if (q.codigo) {
+        html += `<pre class="code-block">${escapeHTML(q.codigo)}</pre>`;
+      }
+
+      html += `<div class="options-list">`;
+      for (const [letra, textoOpcao] of Object.entries(q.opcoes)) {
+        html += `
+          <label class="option-label">
+            <input type="radio" name="q${q.id}" value="${letra}" onchange="atualizarProgresso(${q.id})">
+            <span><strong>${letra.toUpperCase()})</strong> ${escapeHTML(textoOpcao)}</span>
+          </label>
+        `;
+      }
+      html += `</div>`;
+      card.innerHTML = html;
+      container.appendChild(card);
+    });
+
+    function escapeHTML(str) {
+      return str.replace(/[&<>'"]/g, tag => ({
+        '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;'
+      }[tag]));
+    }
+
+    function atualizarProgresso(questaoId) {
+      if (questaoId) {
+        document.getElementById(`card-q${questaoId}`).classList.remove('unanswered');
+      }
+      const respondidas = document.querySelectorAll('input[type="radio"]:checked').length;
+      const percentual = (respondidas / questoes.length) * 100;
+      progressFill.style.width = `${percentual}%`;
+      progressText.textContent = `${respondidas} de ${questoes.length} respondidas`;
+    }
+
+    // Intercepta o envio do formulário
+    document.getElementById('quiz-form').addEventListener('submit', async function(e) {
+      e.preventDefault();
+
+      const nomeInput = document.getElementById('student-name');
+      const nome = nomeInput.value.trim();
+
+      if (!nome) {
+        alert("Por favor, preencha seu nome completo antes de enviar.");
+        nomeInput.focus();
+        return;
+      }
+
+      // Valida se todas as 40 questões foram respondidas
+      let primeiraNaoRespondida = null;
+      const respostas = {};
+
+      questoes.forEach(q => {
+        const marcada = document.querySelector(`input[name="q${q.id}"]:checked`);
+        const card = document.getElementById(`card-q${q.id}`);
+        if (!marcada) {
+          card.classList.add('unanswered');
+          if (!primeiraNaoRespondida) primeiraNaoRespondida = card;
+        } else {
+          card.classList.remove('unanswered');
+          respostas[`q${q.id}`] = marcada.value;
+        }
+      });
+
+      if (primeiraNaoRespondida) {
+        alert("Você ainda não respondeu todas as questões. As questões pendentes foram destacadas em vermelho.");
+        primeiraNaoRespondida.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        return;
+      }
+
+      const btn = document.getElementById('submit-btn');
+      btn.disabled = true;
+      btn.textContent = "Enviando e calculando nota...";
+
+      // Payload pronto para ser enviado ao seu servidor/banco de dados
+      const payload = {
+        aluno: nome,
+        data_envio: new Date().toISOString(),
+        respostas: respostas
+      };
+
+      try {
+        const response = await fetch(ENDPOINT_SERVIDOR, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+
+        if (!response.ok) throw new Error("Erro na resposta do servidor.");
+
+        const resultado = await response.json();
+        exibirResultado(nome, resultado.nota, resultado.acertos, questoes.length);
+      } catch (erro) {
+        console.error(erro);
+        alert("Não foi possível conectar ao servidor do banco de dados no momento. Verifique o endpoint configurado.");
+        btn.disabled = false;
+        btn.textContent = "Enviar Prova e Calcular Nota";
+      }
+    });
+
+    function exibirResultado(nome, nota, acertos, total) {
+      document.getElementById('quiz-form').style.display = 'none';
+      const resultBox = document.getElementById('result-box');
+      document.getElementById('result-student').textContent = `Aluno(a): ${nome}`;
+      document.getElementById('result-score').textContent = `${Number(nota).toFixed(1)} / 10.0`;
+      document.getElementById('result-details').textContent = `Você acertou ${acertos} de ${total} questões.`;
+      resultBox.style.display = 'block';
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  </script>
+</body>
+</html>
